@@ -42,18 +42,30 @@ public class MortgageCalculator {
             return new MortgageCalculator(amount,intrestRate,months,numberOfInstallment);
         }
     }
-    public void fixedRate(){
+    public double fixedRate(){
         double q = 1+((intrestRate/100)/months);
         double score = amount*Math.pow(q,numberOfInstallment*months)*(q-1)/(Math.pow(q,numberOfInstallment*months)-1);
-
-        DecimalFormat df = new DecimalFormat("#.##");
-        System.out.println(df.format(score));
+        return score;
     }
-    public void adjustableRate(){
-
+    public void printFixedRate(){
+        DecimalFormat df = new DecimalFormat("#.##");
+        System.out.println(df.format(fixedRate()));
+    }
+    public double adjustableRate(){
+        double capitalPart = amount/(months*numberOfInstallment);
+        double intrests = amount*(intrestRate/100)/months;
+        return capitalPart + intrests;
+    }
+    public void printAdjustableRate(){
+        DecimalFormat df = new DecimalFormat("#.##");
+        System.out.println(df.format(adjustableRate()));
     }
     public double getAmount() {
         return amount;
+    }
+    public String getIntrests(){
+        DecimalFormat df = new DecimalFormat("#.##");
+        return df.format(fixedRate()*numberOfInstallment*months-amount);
     }
     public double getIntrestRate() {
         return intrestRate;
@@ -62,6 +74,6 @@ public class MortgageCalculator {
         return months;
     }
     public int getNumberOfInstallment() {
-        return numberOfInstallment;
+        return numberOfInstallment*months;
     }
 }
