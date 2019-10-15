@@ -8,24 +8,60 @@ public class MortgageCalculator {
     private int months;
     private int numberOfInstallment;
 
-    public double fixedRate(){
-        double q =1+((intrestRate/100)/months);
-        return  amount*Math.pow(q,numberOfInstallment*months)*(q-1)/(Math.pow(q,numberOfInstallment*months)-1);
+    private MortgageCalculator(double amount, double intrestRate, int months, int numberOfInstallment){
+        this.amount=amount;
+        this.intrestRate=intrestRate;
+        this.months=months;
+        this.numberOfInstallment=numberOfInstallment;
     }
+    public static class Builder{
+        private double amount;
+        private double intrestRate;
+        private int months;
+        private int numberOfInstallment;
 
-    public void setAmount(double amount) {
-        this.amount = amount;
+        public Builder(){
+        }
+        public Builder setAmount(double amount){
+            this.amount = amount;
+            return this;
+        }
+        public Builder setIntrestRate(double intrestRate){
+            this.intrestRate = intrestRate;
+            return this;
+        }
+        public Builder setMonths(int months){
+            this.months = months;
+            return this;
+        }
+        public Builder setNumberOfInstallments(int numberOfInstallment){
+            this.numberOfInstallment=numberOfInstallment;
+            return this;
+        }
+        public MortgageCalculator build(){
+            return new MortgageCalculator(amount,intrestRate,months,numberOfInstallment);
+        }
     }
+    public void fixedRate(){
+        double q = 1+((intrestRate/100)/months);
+        double score = amount*Math.pow(q,numberOfInstallment*months)*(q-1)/(Math.pow(q,numberOfInstallment*months)-1);
 
-    public void setIntrestRate(double intrestRate) {
-        this.intrestRate = intrestRate;
+        DecimalFormat df = new DecimalFormat("#.##");
+        System.out.println(df.format(score));
     }
+    public void adjustableRate(){
 
-    public void setMonths(int months) {
-        this.months = months;
     }
-
-    public void setInstallment(int years) {
-        this.numberOfInstallment = years;
+    public double getAmount() {
+        return amount;
+    }
+    public double getIntrestRate() {
+        return intrestRate;
+    }
+    public int getMonths() {
+        return months;
+    }
+    public int getNumberOfInstallment() {
+        return numberOfInstallment;
     }
 }
