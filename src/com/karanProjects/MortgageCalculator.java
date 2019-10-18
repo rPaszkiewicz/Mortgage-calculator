@@ -5,20 +5,22 @@ import java.text.DecimalFormat;
 public class MortgageCalculator {
     private double amount;
     private double intrestRate;
-    private int months;
-    private int numberOfInstallment;
+    private final int months;
+    private int yearsOfInstallments;
 
-    private MortgageCalculator(double amount, double intrestRate, int months, int numberOfInstallment){
+
+    private MortgageCalculator(double amount, double intrestRate, int yearsOfInstallments){
         this.amount=amount;
         this.intrestRate=intrestRate;
-        this.months=months;
-        this.numberOfInstallment=numberOfInstallment;
+        this.months=12;
+        this.yearsOfInstallments=yearsOfInstallments;
+
     }
     public static class Builder{
         private double amount;
         private double intrestRate;
-        private int months;
-        private int numberOfInstallment;
+        private int months = 12;
+        private int yearsOfInstallments;
 
         public Builder(){
         }
@@ -30,50 +32,52 @@ public class MortgageCalculator {
             this.intrestRate = intrestRate;
             return this;
         }
-        public Builder setMonths(int months){
-            this.months = months;
-            return this;
-        }
-        public Builder setNumberOfInstallments(int numberOfInstallment){
-            this.numberOfInstallment=numberOfInstallment;
+        public Builder setYearsOfInstallment(int yearsOfInstallments){
+            this.yearsOfInstallments=yearsOfInstallments;
             return this;
         }
         public MortgageCalculator build(){
-            return new MortgageCalculator(amount,intrestRate,months,numberOfInstallment);
+            return new MortgageCalculator(amount,intrestRate,yearsOfInstallments);
         }
     }
     public double fixedRate(){
         double q = 1+((intrestRate/100)/months);
-        double score = amount*Math.pow(q,numberOfInstallment*months)*(q-1)/(Math.pow(q,numberOfInstallment*months)-1);
-        return score;
+        return amount*Math.pow(q,yearsOfInstallments*months)*(q-1) / (Math.pow(q,yearsOfInstallments*months)-1);
     }
     public void printFixedRate(){
         DecimalFormat df = new DecimalFormat("#.##");
-        System.out.println(df.format(fixedRate()));
+        for (int i=1; i<=months*yearsOfInstallments;i++) {
+            System.out.println(i + ". " + df.format(fixedRate()));
+        }
     }
-    public double adjustableRate(){
-        double capitalPart = amount/(months*numberOfInstallment);
-        double intrests = amount*(intrestRate/100)/months;
-        return capitalPart + intrests;
+    public String[] adjustableRate(){
+        DecimalFormat df = new DecimalFormat("#.##");
+        String[] storedInstallments = new String[months*yearsOfInstallments];
+        int numberOfInstallments = months * yearsOfInstallments;
+        double percent = intrestRate/100;
+
+        for (int i = 0; i < numberOfInstallments; i++) {
+            storedInstallments[i] = df.format(amount / numberOfInstallments * (1 + (numberOfInstallments - i + 1) * percent / months));
+        }
+
+        return storedInstallments;
     }
     public void printAdjustableRate(){
-        DecimalFormat df = new DecimalFormat("#.##");
-        System.out.println(df.format(adjustableRate()));
-    }
+            for (String s : adjustableRate())
+                System.out.println(s);
+        }
+
     public double getAmount() {
         return amount;
     }
     public String getIntrests(){
         DecimalFormat df = new DecimalFormat("#.##");
-        return df.format(fixedRate()*numberOfInstallment*months-amount);
+        return df.format(fixedRate()*yearsOfInstallments*months-amount);
     }
     public double getIntrestRate() {
         return intrestRate;
     }
-    public int getMonths() {
-        return months;
-    }
     public int getNumberOfInstallment() {
-        return numberOfInstallment*months;
+        return yearsOfInstallments*months;
     }
 }
